@@ -155,11 +155,33 @@ namespace DSCC.CW_1._9987_WEB.Controllers
 
         // POST: Employee/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public async Task<ActionResult> Delete(int id, FormCollection collection)
         {
             try
             {
-                // TODO: Add delete logic here
+                using (var client = new HttpClient())
+                {
+                    // passing service base url
+                    client.BaseAddress = new Uri(baseUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    // define request data format
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    // sending a request
+                    string apiEndpoint = "api/Product/" + id;
+                    HttpResponseMessage response = await client.DeleteAsync(apiEndpoint);
+
+                    // validate the response
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // storing response details received from the API
+                        var responseResult = response.Content.ReadAsStringAsync().Result;
+
+                        // TODO: let the user know about the deletion of employee
+                    }
+                }
+
 
                 return RedirectToAction("Index");
             }
