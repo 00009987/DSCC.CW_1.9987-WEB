@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace DSCC.CW_1._9987_WEB.Controllers
 {
@@ -29,7 +30,8 @@ namespace DSCC.CW_1._9987_WEB.Controllers
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 // sending a request
-                HttpResponseMessage response = await client.GetAsync("api/Product");
+                string apiEndpoint = "api/Product";
+                HttpResponseMessage response = await client.GetAsync(apiEndpoint);
 
                 // validate the response
                 if (response.IsSuccessStatusCode)
@@ -85,16 +87,40 @@ namespace DSCC.CW_1._9987_WEB.Controllers
 
         // POST: Employee/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public async Task<ActionResult> Create(Employee employee)
         {
             try
             {
-                // TODO: Add insert logic here
+                using(var client = new HttpClient())
+                {
+                    // passing service base url
+                    client.BaseAddress = new Uri(baseUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    // define request data format
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    // sending a request
+                    string apiEndpoint = "api/Product/";
+                    var employeeInJson = JsonConvert.SerializeObject(employee);
+                    var requestBody = new StringContent(employeeInJson, Encoding.UTF8, "application/json"); 
+                    HttpResponseMessage response = await client.PostAsync(apiEndpoint, requestBody);
+
+                    // validate the response
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // storing response details received from the API
+                        var responseResult = response.Content.ReadAsStringAsync().Result;
+
+                       // TODO: let the user know about the creation of new employee
+                    }
+                }
 
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
+                ModelState.AddModelError("", ex.Message);
                 return View();
             }
         }
