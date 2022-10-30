@@ -1,57 +1,26 @@
 ﻿using DSCC.CW_1._9987_WEB.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
-using System.Web.Mvc;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 
 namespace DSCC.CW_1._9987_WEB.Controllers
 {
-    public class EmployeeController : Controller
+    public class BlogController : Controller
     {
         // Hosted web API Service base url
         private string baseUrl = "https://localhost:44300";
 
-        // GET: Employee
+        // GET: Blog
         public async Task<ActionResult> Index()
         {
-            List<Employee> Employees = new List<Employee>();
-           
-            using(var client = new HttpClient())
-            {
-                // passing service base url
-                client.BaseAddress = new Uri(baseUrl);
-                client.DefaultRequestHeaders.Clear();
-
-                // define request data format
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                // sending a request
-                string apiEndpoint = "api/Employee";
-                HttpResponseMessage response = await client.GetAsync(apiEndpoint);
-
-                // validate the response
-                if (response.IsSuccessStatusCode)
-                {
-                    // storing response details received from the API
-                    var responseResult = response.Content.ReadAsStringAsync().Result;
-
-                    // parse from string to object
-                    Employees = JsonConvert.DeserializeObject<List<Employee>>(responseResult);
-                    return View(Employees);
-                }
-            }
-
-            return View(Employees);
-        }
-
-        // GET: Employee/Details/5
-        public async Task<ActionResult> Details(int id)
-        {
-            Employee employee = new Employee();
+            List<Blog> blogs = new List<Blog>();
 
             using (var client = new HttpClient())
             {
@@ -63,7 +32,7 @@ namespace DSCC.CW_1._9987_WEB.Controllers
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 // sending a request
-                string apiEndpoint = "api/Employee/" + id;
+                string apiEndpoint = "api/Blog";
                 HttpResponseMessage response = await client.GetAsync(apiEndpoint);
 
                 // validate the response
@@ -73,26 +42,65 @@ namespace DSCC.CW_1._9987_WEB.Controllers
                     var responseResult = response.Content.ReadAsStringAsync().Result;
 
                     // parse from string to object
-                    employee = JsonConvert.DeserializeObject<Employee>(responseResult);
+                    blogs = JsonConvert.DeserializeObject<List<Blog>>(responseResult);
+                    
+                    // format written date properly
+                    foreach (var blog in blogs)
+                    {
+                        blog.FormattedWrittenDate = blog.WrittenDate.Value.ToString("dd/MM/yyyy");
+                    }
                 }
             }
 
-            return View(employee);
+            return View(blogs);
         }
 
-        // GET: Employee/Create
+        // GET: Blog/Details/5
+        public async Task<ActionResult> Details(int id)
+        {
+            Blog blog = new Blog();
+
+            using (var client = new HttpClient())
+            {
+                // passing service base url
+                client.BaseAddress = new Uri(baseUrl);
+                client.DefaultRequestHeaders.Clear();
+
+                // define request data format
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                // sending a request
+                string apiEndpoint = "api/Blog/" + id;
+                HttpResponseMessage response = await client.GetAsync(apiEndpoint);
+
+                // validate the response
+                if (response.IsSuccessStatusCode)
+                {
+                    // storing response details received from the API
+                    var responseResult = response.Content.ReadAsStringAsync().Result;
+
+                    // parse from string to object
+                    blog = JsonConvert.DeserializeObject<Blog>(responseResult);
+                    blog.FormattedWrittenDate = blog.WrittenDate.Value.ToString("dd/MM/yyyy");
+                }
+            }
+
+            return View(blog);
+        }
+
+        // GET: Blog/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Employee/Create
+        // POST: Blog/Create
         [HttpPost]
-        public async Task<ActionResult> Create(Employee employee)
+        public async Task<ActionResult> Create(Blog blog)
         {
             try
             {
-                using(var client = new HttpClient())
+                using (var client = new HttpClient())
                 {
                     // passing service base url
                     client.BaseAddress = new Uri(baseUrl);
@@ -102,21 +110,11 @@ namespace DSCC.CW_1._9987_WEB.Controllers
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                     // sending a request
-                    string apiEndpoint = "api/Employee/";
-                    var employeeInJson = JsonConvert.SerializeObject(employee);
-                    var requestBody = new StringContent(employeeInJson, Encoding.UTF8, "application/json"); 
+                    string apiEndpoint = "api/Blog/";
+                    var blogPostInJson = JsonConvert.SerializeObject(blog);
+                    var requestBody = new StringContent(blogPostInJson, Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await client.PostAsync(apiEndpoint, requestBody);
-
-                    // validate the response
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // storing response details received from the API
-                        var responseResult = response.Content.ReadAsStringAsync().Result;
-
-                       // TODO: let the user know about the creation of new employee
-                    }
                 }
-
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -126,13 +124,13 @@ namespace DSCC.CW_1._9987_WEB.Controllers
             }
         }
 
-        // GET: Employee/Edit/5
+        // GET: Blog/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: Employee/Edit/5
+        // POST: Blog/Edit/5
         [HttpPost]
         public ActionResult Edit(int id, FormCollection collection)
         {
@@ -148,13 +146,40 @@ namespace DSCC.CW_1._9987_WEB.Controllers
             }
         }
 
-        // GET: Employee/Delete/5
-        public ActionResult Delete(int id)
+        // GET: Blog/Delete/5
+        public async Task<ActionResult> Delete(int id)
         {
-            return View();
+            Blog blog = new Blog();
+
+            using (var client = new HttpClient())
+            {
+                // passing service base url
+                client.BaseAddress = new Uri(baseUrl);
+                client.DefaultRequestHeaders.Clear();
+
+                // define request data format
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                // sending a request
+                string apiEndpoint = "api/Blog/" + id;
+                HttpResponseMessage response = await client.GetAsync(apiEndpoint);
+
+                // validate the response
+                if (response.IsSuccessStatusCode)
+                {
+                    // storing response details received from the API
+                    var responseResult = response.Content.ReadAsStringAsync().Result;
+
+                    // parse from string to object
+                    blog = JsonConvert.DeserializeObject<Blog>(responseResult);
+                    blog.FormattedWrittenDate = blog.WrittenDate.Value.ToString("dd/MM/yyyy");
+                }
+            }
+
+            return View(blog);
         }
 
-        // POST: Employee/Delete/5
+        // POST: Blog/Delete/5
         [HttpPost]
         public async Task<ActionResult> Delete(int id, FormCollection collection)
         {
@@ -170,24 +195,14 @@ namespace DSCC.CW_1._9987_WEB.Controllers
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                     // sending a request
-                    string apiEndpoint = "api/Employee/" + id;
+                    string apiEndpoint = "api/Blog/" + id;
                     HttpResponseMessage response = await client.DeleteAsync(apiEndpoint);
-
-                    // validate the response
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // storing response details received from the API
-                        var responseResult = response.Content.ReadAsStringAsync().Result;
-
-                        // TODO: let the user know about the deletion of employee
-                    }
                 }
-
-
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
+                ModelState.AddModelError("", ex.Message);
                 return View();
             }
         }
