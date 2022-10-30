@@ -13,7 +13,7 @@ namespace DSCC.CW_1._9987_WEB.Controllers
     public class EmployeeController : Controller
     {
         // Hosted web API Service base url
-        private string baseUrl = "";
+        private string baseUrl = "https://localhost:44300";
 
         // GET: Employee
         public async Task<ActionResult> Index()
@@ -30,7 +30,7 @@ namespace DSCC.CW_1._9987_WEB.Controllers
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 // sending a request
-                string apiEndpoint = "api/Product";
+                string apiEndpoint = "api/Employee";
                 HttpResponseMessage response = await client.GetAsync(apiEndpoint);
 
                 // validate the response
@@ -41,6 +41,7 @@ namespace DSCC.CW_1._9987_WEB.Controllers
 
                     // parse from string to object
                     Employees = JsonConvert.DeserializeObject<List<Employee>>(responseResult);
+                    return View(Employees);
                 }
             }
 
@@ -62,7 +63,7 @@ namespace DSCC.CW_1._9987_WEB.Controllers
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 // sending a request
-                string apiEndpoint = "api/Product/" + id;
+                string apiEndpoint = "api/Employee/" + id;
                 HttpResponseMessage response = await client.GetAsync(apiEndpoint);
 
                 // validate the response
@@ -101,7 +102,7 @@ namespace DSCC.CW_1._9987_WEB.Controllers
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                     // sending a request
-                    string apiEndpoint = "api/Product/";
+                    string apiEndpoint = "api/Employee/";
                     var employeeInJson = JsonConvert.SerializeObject(employee);
                     var requestBody = new StringContent(employeeInJson, Encoding.UTF8, "application/json"); 
                     HttpResponseMessage response = await client.PostAsync(apiEndpoint, requestBody);
@@ -169,7 +170,7 @@ namespace DSCC.CW_1._9987_WEB.Controllers
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                     // sending a request
-                    string apiEndpoint = "api/Product/" + id;
+                    string apiEndpoint = "api/Employee/" + id;
                     HttpResponseMessage response = await client.DeleteAsync(apiEndpoint);
 
                     // validate the response

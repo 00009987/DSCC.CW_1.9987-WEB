@@ -4,42 +4,44 @@
     ViewBag.Title = "List of Employees";
 }
 
-<h2>Index</h2>
+<h2>List of Employees</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Add an employee", "Create")
 </p>
 <table class="table">
-    <tr>       
-        <th>
-            @Html.DisplayNameFor(model => model.FirstName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.LastName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Position)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ReportsTo)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.BirthDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Address)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Phone)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Gender)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IsMarried)
-        </th>
-        <th></th>
-    </tr>
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Position)
+            </th>
+            <th scope="col"> 
+                @Html.DisplayNameFor(model => model.ReportsTo)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.BirthDate)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Phone)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Gender)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.IsMarried)
+            </th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
 
 @foreach (var item in Model) {
     <tr>

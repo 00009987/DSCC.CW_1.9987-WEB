@@ -16,7 +16,7 @@ namespace DSCC.CW_1._9987_WEB
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Employee", action = "Index", id = UrlParameter.Optional }
             );
         }
     }
