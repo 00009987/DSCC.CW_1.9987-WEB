@@ -20,71 +20,14 @@ namespace DSCC.CW_1._9987_WEB.Controllers
         // GET: Blog
         public async Task<ActionResult> Index()
         {
-            List<Blog> blogs = new List<Blog>();
-
-            using (var client = new HttpClient())
-            {
-                // passing service base url
-                client.BaseAddress = new Uri(baseUrl);
-                client.DefaultRequestHeaders.Clear();
-
-                // define request data format
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                // sending a request
-                string apiEndpoint = "api/Blog";
-                HttpResponseMessage response = await client.GetAsync(apiEndpoint);
-
-                // validate the response
-                if (response.IsSuccessStatusCode)
-                {
-                    // storing response details received from the API
-                    var responseResult = response.Content.ReadAsStringAsync().Result;
-
-                    // parse from string to object
-                    blogs = JsonConvert.DeserializeObject<List<Blog>>(responseResult);
-                    
-                    // format written date properly
-                    foreach (var blog in blogs)
-                    {
-                        blog.FormattedWrittenDate = blog.WrittenDate.Value.ToString("dd/MM/yyyy");
-                    }
-                }
-            }
-
+            List<Blog> blogs = await GetAllBlogs();            
             return View(blogs);
         }
 
         // GET: Blog/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            Blog blog = new Blog();
-
-            using (var client = new HttpClient())
-            {
-                // passing service base url
-                client.BaseAddress = new Uri(baseUrl);
-                client.DefaultRequestHeaders.Clear();
-
-                // define request data format
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                // sending a request
-                string apiEndpoint = "api/Blog/" + id;
-                HttpResponseMessage response = await client.GetAsync(apiEndpoint);
-
-                // validate the response
-                if (response.IsSuccessStatusCode)
-                {
-                    // storing response details received from the API
-                    var responseResult = response.Content.ReadAsStringAsync().Result;
-
-                    // parse from string to object
-                    blog = JsonConvert.DeserializeObject<Blog>(responseResult);
-                    blog.FormattedWrittenDate = blog.WrittenDate.Value.ToString("dd/MM/yyyy");
-                }
-            }
-
+            Blog blog = await GetBlogById(id);
             return View(blog);
         }
 
@@ -125,23 +68,39 @@ namespace DSCC.CW_1._9987_WEB.Controllers
         }
 
         // GET: Blog/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            Blog blog = await GetBlogById(id);
+            return View(blog);
         }
 
         // POST: Blog/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public async Task<ActionResult> Edit(int id, Blog blog)
         {
             try
             {
-                // TODO: Add update logic here
+                using(var client = new HttpClient())
+                {
+                    // passing service base url
+                    client.BaseAddress = new Uri(baseUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    // define request data format
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    // sending a request
+                    string apiEndpoint = "api/Blog/" + id;
+                    var blogPostInJson = JsonConvert.SerializeObject(blog);
+                    var requestBody = new StringContent(blogPostInJson, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PutAsync(apiEndpoint, requestBody);
+                }
 
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
+                ModelState.AddModelError("", ex.Message);
                 return View();
             }
         }
@@ -149,33 +108,7 @@ namespace DSCC.CW_1._9987_WEB.Controllers
         // GET: Blog/Delete/5
         public async Task<ActionResult> Delete(int id)
         {
-            Blog blog = new Blog();
-
-            using (var client = new HttpClient())
-            {
-                // passing service base url
-                client.BaseAddress = new Uri(baseUrl);
-                client.DefaultRequestHeaders.Clear();
-
-                // define request data format
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                // sending a request
-                string apiEndpoint = "api/Blog/" + id;
-                HttpResponseMessage response = await client.GetAsync(apiEndpoint);
-
-                // validate the response
-                if (response.IsSuccessStatusCode)
-                {
-                    // storing response details received from the API
-                    var responseResult = response.Content.ReadAsStringAsync().Result;
-
-                    // parse from string to object
-                    blog = JsonConvert.DeserializeObject<Blog>(responseResult);
-                    blog.FormattedWrittenDate = blog.WrittenDate.Value.ToString("dd/MM/yyyy");
-                }
-            }
-
+            Blog blog = await GetBlogById(id);
             return View(blog);
         }
 
@@ -205,6 +138,79 @@ namespace DSCC.CW_1._9987_WEB.Controllers
                 ModelState.AddModelError("", ex.Message);
                 return View();
             }
+        }
+
+        // helper methods
+        private async Task<Blog> GetBlogById(int id)
+        {
+            Blog blog = new Blog();
+
+            using (var client = new HttpClient())
+            {
+                // passing service base url
+                client.BaseAddress = new Uri(baseUrl);
+                client.DefaultRequestHeaders.Clear();
+
+                // define request data format
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                // sending a request
+                string apiEndpoint = "api/Blog/" + id;
+                HttpResponseMessage response = await client.GetAsync(apiEndpoint);
+
+                // validate the response
+                if (response.IsSuccessStatusCode)
+                {
+                    // storing response details received from the API
+                    var responseResult = response.Content.ReadAsStringAsync().Result;
+
+                    // parse from string to object
+                    blog = JsonConvert.DeserializeObject<Blog>(responseResult);
+                    blog.FormattedWrittenDate = blog.WrittenDate.Value.ToString("dd/MM/yyyy");
+                }
+            }
+
+            return blog;
+        }
+
+        private async Task<List<Blog>> GetAllBlogs()
+        {
+            List<Blog> blogs = new List<Blog>();
+
+            using (var client = new HttpClient())
+            {
+                // passing service base url
+                client.BaseAddress = new Uri(baseUrl);
+                client.DefaultRequestHeaders.Clear();
+
+                // define request data format
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                // sending a request
+                string apiEndpoint = "api/Blog";
+                HttpResponseMessage response = await client.GetAsync(apiEndpoint);
+
+                // validate the response
+                if (response.IsSuccessStatusCode)
+                {
+                    // storing response details received from the API
+                    var responseResult = response.Content.ReadAsStringAsync().Result;
+
+                    // parse from string to object
+                    blogs = JsonConvert.DeserializeObject<List<Blog>>(responseResult);
+
+                    if (blogs.Count > 0)
+                    {
+                        // format written date properly
+                        foreach (var blog in blogs)
+                        {
+                            blog.FormattedWrittenDate = blog.WrittenDate.Value.ToString("dd/MM/yyyy");
+                        }
+                    }
+                }
+            }
+
+            return blogs;
         }
     }
 }
