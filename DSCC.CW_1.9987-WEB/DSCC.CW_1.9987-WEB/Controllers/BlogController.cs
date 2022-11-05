@@ -15,7 +15,7 @@ namespace DSCC.CW_1._9987_WEB.Controllers
     public class BlogController : Controller
     {
         // Hosted web API Service base url
-        private string baseUrl = "https://localhost:44300";
+        private string baseUrl = "http://ec2-54-88-217-253.compute-1.amazonaws.com/";
 
         // GET: Blog
         public async Task<ActionResult> Index()
