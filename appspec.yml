@@ -3,15 +3,7 @@ os: windows
 files: 
   - source: \app
     destination: c:\var\www
-  - source: \deploy-scripts\webmvc.service
-    destination: \etc\systemd\system
 hooks:
   BeforeInstall:
-    - location: \deploy-scripts\before_install.sh
-      timeout: 300
-  ApplicationStop:
-    - location: \deploy-scripts\stop_app.sh
-      timeout: 300
-  ApplicationStart:
-    - location: \deploy-scripts\start_app.sh
-      timeout: 300
+    - location: \deploy-scripts\before_install.bat
+      timeout: 900
