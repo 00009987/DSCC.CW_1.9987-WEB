@@ -1,0 +1,20 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Welcome to Blog House!</h2>
+<p>This simple application enables users to create, read, edit, or delete blog posts.</p>
+<p>The website was created by 00009987 to fulfill Distributed Systems and Cloud Computing module’s requirements.</p>
+
+
+<br />
+
+<ul>
+    <li>
+        @Html.ActionLink("See the list of blog posts", "Index", "Blog")
+    </li>
+    <li>
+        @Html.ActionLink("Write a new one", "Create", "Blog")
+    </li>
+</ul>

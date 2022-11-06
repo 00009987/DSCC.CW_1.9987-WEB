@@ -1,0 +1,18 @@
+[Unit]
+Desription=.NET MVC
+
+[Service]
+WorkingDirectory=/var/www/
+ExecStart=/usr/bin/dotnet /var/www/bin/DSCC.CW_1.9987-WEB.dll
+Restart=always
+
+# Restart service after 10 seconds when dotnet service crashes:
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=webmvc
+Environment=ASPNETCORE_ENVIRONMET=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+Environment=ASPNETCORE_URLS=http://*:80
+
+[Install]
+WantedBy=multi-user.target
