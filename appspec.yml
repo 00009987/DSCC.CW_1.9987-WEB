@@ -1,9 +1,0 @@
-version: 0.0
-os: windows
-files: 
-  - source: \app
-    destination: c:\var\www
-hooks:
-  BeforeInstall:
-    - location: \deploy-scripts\before_install.bat
-      timeout: 900
